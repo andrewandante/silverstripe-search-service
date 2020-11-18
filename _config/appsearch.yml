@@ -20,6 +20,8 @@ SilverStripe\Core\Injector\Injector:
 SilverStripe\SearchService\Service\IndexConfiguration:
   id_field: 'id'
   source_class_field: 'source_class'
+SilverStripe\SearchService\Services\AppSearch\AppSearchService:
+  max_document_size: 102400
 
 ## customise the dataobject fields for AppSearch compatability
 SilverStripe\SearchService\DataObject\DataObjectDocument:
