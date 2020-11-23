@@ -35,6 +35,14 @@ class PageCrawler
     private static $content_xpath_selector = '//main';
 
     /**
+     * Whether to use absolute links rather than relative (useful for subsites etc).
+     *
+     * @config
+     * @var boolean
+     */
+    private static $use_absolute_links = false;
+
+    /**
      * @param DataObject $item
      * @return string
      */
@@ -45,8 +53,10 @@ class PageCrawler
         }
 
         $page = null;
+        $link = $this->config()->get('use_absolute_links') ? $item->AbsoluteLink() : $item->Link();
+
         try {
-            $response = Director::test($item->Link());
+            $response = Director::test($link);
             $page = $response->getBody();
         } catch (Exception $e) {
             Injector::inst()->create(LoggerInterface::class)->error($e);
