@@ -35,14 +35,6 @@ class PageCrawler
     private static $content_xpath_selector = '//main';
 
     /**
-     * Whether to use absolute links rather than relative (useful for subsites etc).
-     *
-     * @config
-     * @var boolean
-     */
-    private static $use_absolute_links = false;
-
-    /**
      * @param DataObject $item
      * @return string
      */
