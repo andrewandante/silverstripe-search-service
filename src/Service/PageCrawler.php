@@ -53,10 +53,8 @@ class PageCrawler
         }
 
         $page = null;
-        $link = $this->config()->get('use_absolute_links') ? $item->AbsoluteLink() : $item->Link();
-
         try {
-            $response = Director::test($link);
+            $response = Director::test($item->AbsoluteLink());
             $page = $response->getBody();
         } catch (Exception $e) {
             Injector::inst()->create(LoggerInterface::class)->error($e);
