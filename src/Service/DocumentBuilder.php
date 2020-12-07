@@ -6,6 +6,7 @@ namespace SilverStripe\SearchService\Service;
 use SilverStripe\Core\Injector\Injectable;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\SearchService\Exception\IndexingServiceException;
+use SilverStripe\SearchService\Exception\IndexConfigurationException;
 use SilverStripe\SearchService\Interfaces\DocumentInterface;
 use SilverStripe\SearchService\Interfaces\DocumentMetaProvider;
 use SilverStripe\SearchService\Interfaces\IndexingInterface;
@@ -36,6 +37,7 @@ class DocumentBuilder
      * @param DocumentInterface $document
      * @return array
      * @throws IndexingServiceException
+     * @throws IndexConfigurationException
      */
     public function toArray(DocumentInterface $document): array
     {

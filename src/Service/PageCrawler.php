@@ -51,16 +51,12 @@ class PageCrawler
 
         Environment::increaseMemoryLimitTo();
         Environment::increaseTimeLimitTo();
-        $originalRequirements = Requirements::backend();
-        Requirements::clear();
 
         try {
             $response = Director::test($item->AbsoluteLink());
             $page = $response->getBody();
         } catch (Exception $e) {
             Injector::inst()->create(LoggerInterface::class)->error($e);
-        } finally {
-            Requirements::set_backend($originalRequirements);
         }
         $output = '';
         // just get the internal content for the page.

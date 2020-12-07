@@ -3,8 +3,10 @@
 namespace SilverStripe\SearchService\Services\AppSearch;
 
 use Elastic\AppSearch\Client\Client;
+use Psr\Log\LoggerInterface;
 use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Injector\Injectable;
+use SilverStripe\Core\Injector\Injector;
 use SilverStripe\SearchService\Exception\IndexConfigurationException;
 use SilverStripe\SearchService\Exception\IndexingServiceException;
 use SilverStripe\SearchService\Interfaces\BatchDocumentInterface;
@@ -87,7 +89,14 @@ class AppSearchService implements IndexingInterface
                 continue;
             }
 
-            $fields = $this->getBuilder()->toArray($item);
+            try {
+                $fields = $this->getBuilder()->toArray($item);
+            } catch (IndexConfigurationException $e) {
+                Injector::inst()->get(LoggerInterface::class)->warn(
+                    sprintf("Failed to convert document to array: %s", $e->getMessage())
+                );
+                continue;
+            }
 
             $indexes = $this->getConfiguration()->getIndexesForDocument($item);
             foreach (array_keys($indexes) as $indexName) {
