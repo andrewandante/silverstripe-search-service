@@ -325,7 +325,7 @@ class AppSearchService implements IndexingInterface
         }
         if (preg_match('/[^a-z0-9_]/', $field)) {
             throw new IndexConfigurationException(sprintf(
-                'Invalid field name: %s. Must contain only alphanumeric characters and underscores.',
+                'Invalid field name: %s. Must contain only lowercase alphanumeric characters and underscores.',
                 $field
             ));
         }
