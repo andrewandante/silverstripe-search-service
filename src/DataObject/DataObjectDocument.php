@@ -145,6 +145,11 @@ class DataObjectDocument implements
             return false;
         }
 
+        // Dataobject is only in draft
+        if ($dataObject->hasExtension(Versioned::class) && !$dataObject->isLiveVersion()) {
+            return false;
+        }
+
         // Extension override
         $results = $dataObject->invokeWithExtensions('canIndexInSearch');
 
