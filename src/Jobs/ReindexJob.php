@@ -94,7 +94,7 @@ class ReindexJob extends AbstractQueuedJob implements QueuedJob
 
         $steps = (int) array_reduce($fetchers, function ($total, $fetcher) {
             /* @var DocumentFetcherInterface $fetcher */
-            return $total + ($fetcher->getTotalDocuments() / $this->batchSize);
+            return $total + ceil($fetcher->getTotalDocuments() / $this->batchSize);
         }, 0);
 
         $this->totalSteps = $steps;
