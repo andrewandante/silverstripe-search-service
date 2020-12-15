@@ -9,6 +9,7 @@ use SilverStripe\SearchService\Service\DocumentFetchCreatorRegistry;
 use SilverStripe\SearchService\Service\IndexConfiguration;
 use SilverStripe\SearchService\Service\Indexer;
 use SilverStripe\Versioned\Versioned;
+use Symbiote\QueuedJobs\DataObjects\QueuedJobDescriptor;
 use Symbiote\QueuedJobs\Services\AbstractQueuedJob;
 use Symbiote\QueuedJobs\Services\QueuedJob;
 use InvalidArgumentException;
@@ -133,6 +134,12 @@ class ReindexJob extends AbstractQueuedJob implements QueuedJob
         }
         $this->currentStep++;
 
+        // Pause this job and wait for it to rejoin the queue - this should release the memory
+        QueuedJobDescriptor::get()
+            ->filter(['JobStatus' => QueuedJob::STATUS_RUN, 'Implementation' => self::class])
+            ->first()
+            ->update(['JobStatus' => QueuedJob::STATUS_WAIT])
+            ->write();
     }
 
     /**
