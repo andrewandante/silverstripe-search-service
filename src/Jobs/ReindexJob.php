@@ -135,11 +135,12 @@ class ReindexJob extends AbstractQueuedJob implements QueuedJob
         $this->currentStep++;
 
         // Pause this job and wait for it to rejoin the queue - this should release the memory
-        QueuedJobDescriptor::get()
+        $descriptor = QueuedJobDescriptor::get()
             ->filter(['JobStatus' => QueuedJob::STATUS_RUN, 'Implementation' => self::class])
-            ->first()
-            ->update(['JobStatus' => QueuedJob::STATUS_WAIT])
-            ->write();
+            ->first();
+        if ($descriptor && $descriptor->exists()) {
+            $descriptor->update(['JobStatus' => QueuedJob::STATUS_WAIT])->write();
+        }
     }
 
     /**
