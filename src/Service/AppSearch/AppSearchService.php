@@ -92,7 +92,7 @@ class AppSearchService implements IndexingInterface
             try {
                 $fields = $this->getBuilder()->toArray($item);
             } catch (IndexConfigurationException $e) {
-                Injector::inst()->get(LoggerInterface::class)->warn(
+                Injector::inst()->get(LoggerInterface::class)->warning(
                     sprintf("Failed to convert document to array: %s", $e->getMessage())
                 );
                 continue;
@@ -108,11 +108,21 @@ class AppSearchService implements IndexingInterface
         }
 
         foreach ($documentMap as $indexName => $docsToAdd) {
-            $result = $this->getClient()->indexDocuments(
-                static::environmentizeIndex($indexName),
-                $docsToAdd
-            );
-            $this->handleError($result);
+            try {
+                $result = $this->getClient()->indexDocuments(
+                    static::environmentizeIndex($indexName),
+                    $docsToAdd
+                );
+                $this->handleError($result);
+            } catch (Exception $e) {
+                Injector::inst()->get(LoggerInterface::class)->error(
+                    sprintf("Failed to index documents: %s", $e->getMessage()),
+                    [
+                        'exception' => $e,
+                    ]
+                );
+                continue;
+            }
         }
         return $this;
     }
