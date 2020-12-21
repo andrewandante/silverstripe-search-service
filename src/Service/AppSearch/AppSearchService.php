@@ -119,7 +119,7 @@ class AppSearchService implements IndexingInterface
                     sprintf("Failed to index documents: %s", $e->getTraceAsString())
                 );
                 Injector::inst()->get(LoggerInterface::class)->error(
-                    sprintf("DocsToAdd: %s", implode(PHP_EOL, $docsToAdd))
+                    sprintf("DocsToAdd: %s", json_encode($docsToAdd))
                 );
                 continue;
             }
