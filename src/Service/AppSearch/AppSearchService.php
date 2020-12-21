@@ -116,10 +116,10 @@ class AppSearchService implements IndexingInterface
                 $this->handleError($result);
             } catch (Exception $e) {
                 Injector::inst()->get(LoggerInterface::class)->error(
-                    sprintf("Failed to index documents: %s", $e->getMessage()),
-                    [
-                        'exception' => $e,
-                    ]
+                    sprintf("Failed to index documents: %s", $e->getTraceAsString())
+                );
+                Injector::inst()->get(LoggerInterface::class)->error(
+                    sprintf("DocsToAdd: %s", implode(PHP_EOL, $docsToAdd))
                 );
                 continue;
             }
