@@ -122,7 +122,7 @@ class AppSearchService implements IndexingInterface
                     sprintf("DocsToAdd: %s", json_encode($docsToAdd))
                 );
                 Injector::inst()->get(LoggerInterface::class)->error(
-                    sprintf("JSON errors: %s, %s", json_last_error(), json_last_error_msg())
+                    sprintf("DUMP : %s", var_export($docsToAdd, true))
                 );
                 continue;
             }
