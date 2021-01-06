@@ -20,6 +20,7 @@ use InvalidArgumentException;
  * @property int $fetchOffset
  * @property int $batchSize
  * @property array $onlyClasses
+ * @property array $onlyIndexes
  */
 class ReindexJob extends AbstractQueuedJob implements QueuedJob
 {
@@ -40,13 +41,15 @@ class ReindexJob extends AbstractQueuedJob implements QueuedJob
     private $registry;
 
     /**
-     * @param array $onlyClasses
-     * @param int $batchSize
+     * @param array|null $onlyClasses
+     * @param array|null $onlyIndexes
+     * @param int|null $batchSize
      */
-    public function __construct(?array $onlyClasses = [], ?int $batchSize = null)
+    public function __construct(?array $onlyClasses = [], ?array $onlyIndexes = [], ?int $batchSize = null)
     {
         parent::__construct();
         $this->onlyClasses = $onlyClasses;
+        $this->onlyIndexes = $onlyIndexes;
         $this->batchSize = $batchSize ?: IndexConfiguration::singleton()->getBatchSize();
         if ($this->batchSize < 1) {
             throw new InvalidArgumentException('Batch size must be greater than 0');
@@ -61,6 +64,9 @@ class ReindexJob extends AbstractQueuedJob implements QueuedJob
     public function getTitle()
     {
         $title = 'Search service reindex all documents';
+        if (!empty($this->onlyIndexes)) {
+            $title .= ' in index ' . implode(',', $this->onlyIndexes);
+        }
         if (!empty($this->onlyClasses)) {
             $title .= ' of class ' . implode(',', $this->onlyClasses);
         }
@@ -80,6 +86,11 @@ class ReindexJob extends AbstractQueuedJob implements QueuedJob
     {
         Versioned::set_stage(Versioned::LIVE);
         $until = strtotime('-' . $this->getConfiguration()->getSyncInterval());
+
+        if ($this->onlyIndexes && count($this->onlyIndexes)) {
+            $this->getConfiguration()->setOnlyIndexes($this->onlyIndexes);
+        }
+
         $classes = $this->onlyClasses && count($this->onlyClasses) ?
             $this->onlyClasses :
             $this->getConfiguration()->getSearchableBaseClasses();

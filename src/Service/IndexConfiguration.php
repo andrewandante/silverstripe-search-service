@@ -74,6 +74,11 @@ class IndexConfiguration
     private $indexVariant;
 
     /**
+     * @var string[]
+     */
+    private $onlyIndexes = [];
+
+    /**
      * @var bool
      * @config
      */
@@ -148,12 +153,31 @@ class IndexConfiguration
     }
 
     /**
+     * @param array $indexes
+     * @return $this
+     */
+    public function setOnlyIndexes(array $indexes): IndexConfiguration
+    {
+        $this->onlyIndexes = $indexes;
+        return $this;
+    }
+
+    /**
      * @return array
      * @config
      */
     public function getIndexes(): array
     {
-        return $this->config()->get('indexes');
+        $indexes = $this->config()->get('indexes');
+        if ($this->onlyIndexes && !empty($this->onlyIndexes)) {
+            foreach ($indexes as $index => $configuration) {
+                if (!in_array($index, $this->onlyIndexes)) {
+                    unset($indexes[$index]);
+                }
+            }
+        }
+
+        return $indexes;
     }
 
     /**
