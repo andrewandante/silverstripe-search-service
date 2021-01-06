@@ -287,7 +287,6 @@ class DataObjectDocumentTest extends SearchServiceTest
         $config = $this->mockConfig();
         $config->set('getFieldsForClass', [
             DataObjectFake::class => [
-
                 new Field('htmltext', 'getDBHTMLText'),
                 new Field('htmlstring', 'getHTMLString'),
                 new Field('multi', 'getAMultiLineString'),
