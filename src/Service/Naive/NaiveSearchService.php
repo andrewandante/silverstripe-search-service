@@ -62,4 +62,19 @@ class NaiveSearchService implements IndexingInterface
     {
         return 0;
     }
+
+    public function getExternalURL(): ?string
+    {
+        return null;
+    }
+
+    public function getExternalURLDescription(): ?string
+    {
+        return null;
+    }
+
+    public function getDocumentationURL(): ?string
+    {
+        return null;
+    }
 }
