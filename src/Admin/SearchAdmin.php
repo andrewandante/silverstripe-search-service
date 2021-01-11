@@ -12,4 +12,10 @@ class SearchAdmin extends LeftAndMain
 
     private static $menu_icon_class = 'font-icon-search';
 
+    public function getEditForm($id = null, $fields = null)
+    {
+
+    }
+
+
 }

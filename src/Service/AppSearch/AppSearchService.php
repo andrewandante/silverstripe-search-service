@@ -5,6 +5,7 @@ namespace SilverStripe\SearchService\Services\AppSearch;
 use Elastic\AppSearch\Client\Client;
 use Psr\Log\LoggerInterface;
 use SilverStripe\Core\Config\Configurable;
+use SilverStripe\Core\Environment;
 use SilverStripe\Core\Injector\Injectable;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\SearchService\Exception\IndexConfigurationException;
@@ -477,8 +478,6 @@ class AppSearchService implements IndexingInterface
         }
     }
 
-
-
     /**
      * @param string $indexName
      * @return string
@@ -491,5 +490,20 @@ class AppSearchService implements IndexingInterface
         }
 
         return $indexName;
+    }
+
+    public function getExternalURL(): ?string
+    {
+        return Environment::getEnv('APP_SEARCH_ENDPOINT') ?: null;
+    }
+
+    public function getExternalURLDescription(): ?string
+    {
+        return 'External Link to Elastic App Search Dashboard';
+    }
+
+    public function getDocumentationURL(): ?string
+    {
+        return 'https://www.elastic.co/guide/en/app-search/current/guides.html';
     }
 }
