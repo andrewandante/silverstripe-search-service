@@ -6,9 +6,18 @@ use SilverStripe\Admin\LeftAndMain;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\Form;
+use SilverStripe\Forms\GridField\GridField;
+use SilverStripe\Forms\GridField\GridFieldConfig_RecordViewer;
 use SilverStripe\Forms\HeaderField;
 use SilverStripe\Forms\LiteralField;
+use SilverStripe\ORM\ArrayList;
+use SilverStripe\ORM\DataObject;
+use SilverStripe\ORM\FieldType\DBInt;
+use SilverStripe\ORM\FieldType\DBText;
+use SilverStripe\SearchService\Extensions\SearchServiceExtension;
 use SilverStripe\SearchService\Interfaces\IndexingInterface;
+use SilverStripe\View\ArrayData;
+use Symfony\Component\VarDumper\Cloner\Data;
 
 class SearchAdmin extends LeftAndMain
 {
@@ -29,7 +38,7 @@ class SearchAdmin extends LeftAndMain
         $externalURL = $indexService->getExternalURL();
         $docsURL = $indexService->getDocumentationURL();
 
-        if ($externalURL || $docsURL) {
+        if ($externalURL !== null || $docsURL !== null) {
             $fields[] = HeaderField::create('ExternalLinksHeader', 'External Links');
         }
 
@@ -51,10 +60,29 @@ class SearchAdmin extends LeftAndMain
             );
         }
 
-        $form->setFields(FieldList::create($fields));
+        $indexedDocsGridfield = GridField::create(
+            'IndexedDocuments',
+            'Documents by Index',
+            $this->buildIndexedDocumentsList()
+        );
 
-        return $form;
+        $fields[] = $indexedDocsGridfield;
 
+        return $form->setFields(FieldList::create($fields));
+    }
+
+    private function buildIndexedDocumentsList()
+    {
+        $list = ArrayList::create();
+        foreach (SearchServiceExtension::singleton()->getConfiguration()->getIndexes() as $index => $data) {
+            $dataObject = new IndexedDocumentsResult();
+            $dataObject->IndexName = $index;
+            $dataObject->DBDocs = 123;
+            $dataObject->RemoteDocs = 456;
+            $list->push($dataObject);
+        }
+
+        return $list;
     }
 
 
