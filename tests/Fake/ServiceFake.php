@@ -96,4 +96,19 @@ class ServiceFake implements IndexingInterface
     {
         return $this->maxDocSize;
     }
+
+    public function getExternalURL(): ?string
+    {
+        return null;
+    }
+
+    public function getExternalURLDescription(): ?string
+    {
+        return null;
+    }
+
+    public function getDocumentationURL(): ?string
+    {
+        return null;
+    }
 }
