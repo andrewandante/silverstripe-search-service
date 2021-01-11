@@ -7,27 +7,19 @@ use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\Form;
 use SilverStripe\Forms\GridField\GridField;
-use SilverStripe\Forms\GridField\GridFieldConfig_RecordViewer;
 use SilverStripe\Forms\HeaderField;
 use SilverStripe\Forms\LiteralField;
 use SilverStripe\Forms\NumericField;
 use SilverStripe\ORM\ArrayList;
-use SilverStripe\ORM\DataObject;
-use SilverStripe\ORM\FieldType\DBInt;
-use SilverStripe\ORM\FieldType\DBText;
 use SilverStripe\SearchService\Extensions\SearchServiceExtension;
-use SilverStripe\SearchService\Interfaces\DocumentFetcherInterface;
 use SilverStripe\SearchService\Interfaces\IndexingInterface;
 use SilverStripe\SearchService\Jobs\ClearIndexJob;
 use SilverStripe\SearchService\Jobs\IndexJob;
 use SilverStripe\SearchService\Jobs\ReindexJob;
 use SilverStripe\SearchService\Jobs\RemoveDataObjectJob;
 use SilverStripe\SearchService\Services\AppSearch\AppSearchService;
-use SilverStripe\View\ArrayData;
-use Symbiote\QueuedJobs\Controllers\QueuedJobsAdmin;
 use Symbiote\QueuedJobs\DataObjects\QueuedJobDescriptor;
 use Symbiote\QueuedJobs\Services\QueuedJob;
-use Symfony\Component\VarDumper\Cloner\Data;
 
 class SearchAdmin extends LeftAndMain
 {
@@ -37,7 +29,13 @@ class SearchAdmin extends LeftAndMain
 
     private static $menu_icon_class = 'font-icon-search';
 
-    public function getEditForm($id = null, $fields = null)
+    /**
+     * @param null $id
+     * @param null $fields
+     * @return Form
+     * @throws \SilverStripe\SearchService\Exception\IndexingServiceException
+     */
+    public function getEditForm($id = null, $fields = null): Form
     {
         $form = parent::getEditForm($id, $fields);
 
@@ -46,7 +44,10 @@ class SearchAdmin extends LeftAndMain
 
         $fields = [];
         $fields[] = GridField::create('IndexedDocuments', 'Documents by Index', $this->buildIndexedDocumentsList());
-        $fields[] = LiteralField::create('Divider', '<div class="clear" style="height: 32px; border-top: 1px solid #ced5e1"></div>');
+        $fields[] = LiteralField::create(
+            'Divider',
+            '<div class="clear" style="height: 32px; border-top: 1px solid #ced5e1"></div>'
+        );
         $fields[] = HeaderField::create('QueuedJobsHeader', 'Queued Jobs Status')
             ->setAttribute('style', 'font-weight: 300;');
 
@@ -99,14 +100,17 @@ class SearchAdmin extends LeftAndMain
                         '<div><a href="%s" target="_blank" style="font-size: medium">%s</a></div>',
                         $externalURL,
                         $indexService->getExternalURLDescription() ?? 'External URL'
-                    ),
+                    )
                 );
             }
 
             if ($docsURL !== null) {
                 $fields[] = LiteralField::create(
                     'DocsURL',
-                    sprintf('<div><a href="%s" target="_blank" style="font-size: medium">Documentation URL</a></div>', $docsURL),
+                    sprintf(
+                        '<div><a href="%s" target="_blank" style="font-size: medium">Documentation URL</a></div>',
+                        $docsURL
+                    )
                 );
             }
         }
@@ -114,7 +118,11 @@ class SearchAdmin extends LeftAndMain
         return $form->setFields(FieldList::create($fields));
     }
 
-    private function buildIndexedDocumentsList()
+    /**
+     * @return ArrayList
+     * @throws \SilverStripe\SearchService\Exception\IndexingServiceException
+     */
+    private function buildIndexedDocumentsList(): ArrayList
     {
         $list = ArrayList::create();
 
@@ -123,7 +131,6 @@ class SearchAdmin extends LeftAndMain
 
         $configuration = SearchServiceExtension::singleton()->getConfiguration();
         foreach ($configuration->getIndexes() as $index => $data) {
-
             $localCount = 0;
             foreach ($configuration->getClassesForIndex($index) as $class) {
                 $localCount += $class::get()->where('SearchIndexed IS NOT NULL')->count();
@@ -138,5 +145,4 @@ class SearchAdmin extends LeftAndMain
 
         return $list;
     }
-
 }
