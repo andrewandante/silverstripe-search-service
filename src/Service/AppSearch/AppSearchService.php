@@ -499,7 +499,7 @@ class AppSearchService implements IndexingInterface
 
     public function getExternalURLDescription(): ?string
     {
-        return 'External Link to Elastic App Search Dashboard';
+        return 'Elastic App Search Dashboard';
     }
 
     public function getDocumentationURL(): ?string
