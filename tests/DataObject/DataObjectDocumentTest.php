@@ -52,6 +52,7 @@ class DataObjectDocumentTest extends SearchServiceTest
         /** @var Versioned $dataobject */
         $dataobject = new VersionedDataObjectFake(['ID' => 5, 'ShowInSearch' => true]);
         $dataobject->publishSingle();
+        $config->set('getIndexesForDocument', ['index' => 'data']);
         $doc = DataObjectDocument::create($dataobject);
 
         $dataobject->can_view = false;
