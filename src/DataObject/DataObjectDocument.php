@@ -166,6 +166,10 @@ class DataObjectDocument implements
             return false;
         }
 
+        if (empty($this->getConfiguration()->getIndexesForDocument($this))) {
+            return false;
+        }
+
         // Extension override
         $results = $dataObject->invokeWithExtensions('canIndexInSearch');
 

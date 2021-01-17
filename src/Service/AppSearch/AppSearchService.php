@@ -100,6 +100,14 @@ class AppSearchService implements IndexingInterface
             }
 
             $indexes = $this->getConfiguration()->getIndexesForDocument($item);
+
+            if (empty($indexes)) {
+                Injector::inst()->get(LoggerInterface::class)->warn(
+                    sprintf("No valid indexes found for document %s, skipping...", $item->getIdentifier())
+                );
+                continue;
+            }
+
             foreach (array_keys($indexes) as $indexName) {
                 if (!isset($documentMap[$indexName])) {
                     $documentMap[$indexName] = [];
